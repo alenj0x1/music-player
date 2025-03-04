@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Music player</title>
+
+		<link rel="stylesheet" href="../styles/index.css" />
+
+		<script
+			src="https://code.jquery.com/jquery-3.7.1.min.js"
+			integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<div class="container-body">
+			<header id="header">
+				<h1 class="title">Music player</h1>
+
+				<img src="" class="header-image" />
+			</header>
+
+			<main id="main">
+				<ul id="albums"></ul>
+			</main>
+		</div>
+	</body>
+
+	<script>
+		let albumsData = [];
+
+		$('#taka').on('click', () => {
+			location.href = 'albums.html';
+		});
+
+		$(document).ready(async () => {
+			albumsData = await data.getAlbums();
+
+			setHeaderPicture();
+
+			setInterval(async () => {
+				setHeaderPicture();
+			}, 3000);
+
+			fillAlbums();
+		});
+
+		async function setHeaderPicture() {
+			const random = albumsData[Math.floor(Math.random() * albumsData.length)].picture;
+			const picture = await data.getPicture(random);
+
+			$('.header-image').attr('src', picture);
+		}
+
+		$(document).on('click', '.album', async function () {
+			this.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'center' });
+
+			await electron.moveToView('songs', `id=${$(this).data('albumid')}`);
+		});
+
+		function fillAlbums() {
+			albumsData.forEach(async (album) => {
+				const pictureAlbum = await data.getPicture(album.picture);
+				const songsNames = album.songs.map((song) => song.name.split('.')[0]).join(',');
+
+				$('#albums').append(`
+					<li class="album" data-albumid="${album.id}">
+						<img class="album-picture" src="${pictureAlbum}"/>
+						<footer class="album-footer">
+							<span class="album-name">${album.name}
+								<span class="album-songs-count">${album.songs.length}</span>
+							</span>
+							<span class="album-songs-names">${songsNames}</span>
+						</footer>
+					</li>
+				`);
+			});
+		}
+	</script>
+</html>

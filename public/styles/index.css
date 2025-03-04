@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*,
+*::after,
+*::before {
+	box-sizing: border-box;
+	font-family: 'Poppins', serif;
+}
+
+img {
+	user-select: none;
+}
+
+::selection {
+	background-color: rgb(29, 29, 29);
+}
+
+::-webkit-scrollbar {
+	width: 5px;
+	background-color: rgb(22, 22, 22);
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: rgb(92, 92, 92);
+	border-radius: 10px;
+}
+
+body {
+	color: white;
+	margin: 0;
+	background: linear-gradient(to bottom, rgb(0, 0, 0, 0.99), rgb(0, 0, 0));
+	background-size: cover;
+	min-height: 100vh;
+	overflow-x: hidden;
+	margin-bottom: 70px;
+}
+
+.container-body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+/* Header */
+#header {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	position: relative;
+}
+
+.title {
+	text-align: center;
+	color: white;
+	text-shadow: 0 0 150px rgba(172, 255, 47, 0.5);
+}
+
+.header-image {
+	width: 100%;
+	top: 0;
+	z-index: -10;
+	position: absolute;
+	mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+}
+
+/* Albums */
+#albums,
+#songs {
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+	margin: 30px;
+}
+
+.album {
+	display: flex;
+	background: rgba(0, 0, 0);
+	list-style: none;
+	z-index: 0;
+	position: relative;
+	overflow: hidden;
+	height: 300px;
+	max-height: 100px;
+	transition: max-height 0.2s ease-in-out;
+}
+
+.album:hover {
+	cursor: pointer;
+	max-height: 300px;
+	margin-bottom: 30px;
+}
+
+.album:active {
+	translate: 0 -10px;
+	transition-duration: 0.2s;
+	z-index: 10;
+	scroll-behavior: smooth;
+}
+
+.album:hover > .album-picture {
+	mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.9));
+}
+
+.album:hover .album-footer {
+	align-self: end;
+	padding: 10px 40px 15px 15px;
+	background-color: rgba(255, 255, 255, 0.8);
+	color: rgb(50, 50, 50);
+}
+
+.album:hover .album-songs-count {
+	display: block;
+	color: rgb(70, 70, 70);
+}
+
+.album:hover .album-songs-names {
+	display: block;
+	text-wrap: nowrap;
+}
+
+.album:hover .album-name {
+	margin: 0;
+	color: rgb(50, 50, 50);
+}
+
+.album-picture {
+	top: 0;
+	left: 0;
+	position: absolute;
+	width: 100%;
+	z-index: -1;
+	mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
+}
+
+.album-footer {
+	display: flex;
+	gap: 3px;
+	width: 100%;
+	flex-direction: column;
+}
+
+.album-name {
+	display: flex;
+	gap: 5px;
+	margin: 10px;
+	font-weight: bold;
+	color: rgb(190, 190, 190);
+}
+
+.album-songs-count {
+	color: rgb(210, 210, 210);
+	font-size: 0.8rem;
+}
+
+.album-songs-names {
+	display: none;
+	text-wrap: nowrap;
+	font-size: 0.6rem;
+}
+
+.icon {
+	height: 20px;
+}
+
+.btn {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 35px;
+	width: 35px;
+	background: none;
+	border: none;
+	background: rgb(20, 20, 20);
+	border-radius: 100%;
+	z-index: 30;
+	color: rgb(75, 75, 75);
+	box-shadow: 0 0 10px 1px rgb(7, 7, 7);
+}
+
+.btn:hover {
+	cursor: pointer;
+	background: rgb(25, 25, 25);
+}
+
+.btn:active {
+	background: rgb(30, 30, 30);
+}
+
+.to-home {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	margin: 0 30px 30px;
+	background: white;
+}
+
+.to-home:hover {
+	background: rgb(240, 240, 240);
+}
+
+button[class~='playing'] {
+	background-color: rgb(240, 240, 240);
+}
+
+button[class~='playing']:hover {
+	background-color: rgb(240, 240, 240);
+}

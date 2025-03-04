@@ -1,0 +1,97 @@
+body {
+	background: rgb(10, 10, 10);
+}
+
+#header {
+	height: 100vh;
+}
+
+.title {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	margin: 20px 30px;
+	text-align: left;
+}
+
+.header-image {
+	object-fit: cover;
+	position: initial;
+	mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0) 80%);
+}
+
+.header-interact {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 30px 30px;
+}
+
+#songs {
+	display: flex;
+	list-style: none;
+}
+
+.song {
+	color: rgb(200, 200, 200);
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 1px solid rgb(20, 20, 20);
+	padding: 10px 0;
+	overflow: hidden;
+}
+
+.song:hover > .song-name {
+	color: rgb(230, 230, 230);
+}
+
+.song-header {
+	display: flex;
+	flex-direction: column;
+}
+
+.song-name {
+	text-wrap: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 250px;
+}
+
+.song-metadata {
+	display: flex;
+	gap: 5px;
+}
+
+.song-metadata-year,
+.song-metadata-artists {
+	font-size: 0.65rem;
+	color: rgb(114, 114, 114);
+}
+
+.song-metadata-artists::after {
+	content: ' ◦';
+}
+
+.heart-icon {
+	transition-duration: 0.5s;
+}
+
+.heart-icon-pressed {
+	animation: taka 0.5s;
+	transition-duration: 0.5s;
+	fill: rgb(236, 147, 147);
+}
+
+@keyframes taka {
+	0% {
+		transform: scale(3);
+	}
+	25% {
+		rotate: 25deg;
+	}
+	50% {
+		rotate: -25deg;
+	}
+	75% {
+	}
+}

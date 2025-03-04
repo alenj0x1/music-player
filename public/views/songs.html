@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>My player</title>
+
+		<link rel="stylesheet" href="../styles/index.css" />
+		<link rel="stylesheet" href="../styles/songs.css" />
+
+		<script
+			src="https://code.jquery.com/jquery-3.7.1.min.js"
+			integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<div class="container-body">
+			<header id="header">
+				<h1 class="title">Music player</h1>
+
+				<div class="header-interact">
+					<button class="btn heart-button">
+						<svg
+							class="icon heart-icon"
+							width="50"
+							height="50"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M12 21s-6-4.35-8.5-7.5C1.5 10 2.5 6 6 4c2.5-1.5 5 0 6 2 1-2 3.5-3.5 6-2 3.5 2 4.5 6 2.5 9.5C18 16.65 12 21 12 21z"
+							/>
+						</svg>
+					</button>
+				</div>
+
+				<img src="" class="header-image" />
+			</header>
+
+			<main id="main">
+				<ul id="songs"></ul>
+
+				<audio id="audio-player" controls></audio>
+			</main>
+		</div>
+	</body>
+
+	<script src="../scripts/index.js"></script>
+
+	<script>
+		const PAUSE_SVG = `
+			<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="currentColor">
+  			<rect x="5" y="4" width="4" height="16"></rect>
+  			<rect x="15" y="4" width="4" height="16"></rect>
+			</svg>
+		`;
+		const PLAY_SVG = `
+			<svg class="icon" width="50" height="50" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  			<path d="M8 5v14l11-7z"/>
+			</svg>
+		`;
+
+		$('.heart-button').on('click', function () {
+			const heartIcon = $('.heart-icon');
+			heartIcon.toggleClass('heart-icon-pressed');
+		});
+
+		$(document).on('click', '.song-play', async function () {
+			const button = $(this);
+			const songId = button.data('songid');
+			const albumId = button.data('albumid');
+
+			resetOtherPlayButtons();
+
+			button.toggleClass('playing');
+			button.children(':first').remove();
+
+			if (button.hasClass('playing')) {
+				$('#audio-player').attr('src', await data.getSongBase64({ albumId, songId }));
+				$('#audio-player')[0].play();
+
+				button.append(PAUSE_SVG);
+				return;
+			}
+
+			button.append(PLAY_SVG);
+		});
+
+		$(document).ready(async () => {
+			showToHomeButton();
+
+			const params = new URLSearchParams(location.search);
+			const albumId = params.get('id');
+
+			if (!albumId) electron.moveToView('index', '');
+
+			const album = await data.getAlbum(parseInt(albumId));
+			if (!album) electron.moveToView('index', '');
+
+			$('.title').text(album.name);
+			$('title').text(album.name);
+
+			const getPicture = await data.getPicture(album.picture);
+			$('.header-image').attr('src', getPicture);
+
+			album.songs.forEach(async (song) => {
+				const metadata = await data.getMetadata({ albumId: parseInt(albumId), songId: parseInt(song.id) });
+
+				$('#songs').append(`
+						<li class="song" data-songid=${song.id}>
+							<header class="song-header">
+								<span class="song-name">${song.name.split('.')[0]}</span>
+								
+								<div class="song-metadata">
+									<span class="song-metadata-artists">${metadata.common.artists.join(',')}</span>
+									<span class="song-metadata-year">${metadata.common.year}</span>
+								</div>
+							</header>
+
+							<div class="song-interact">
+								<button class="btn song-play" data-songid=${song.id} data-albumid=${albumId}>
+									<svg class="icon" width="50" height="50" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  									<path d="M8 5v14l11-7z"/>
+									</svg>
+								</button>
+							</div>
+						</li>
+				`);
+			});
+		});
+
+		function resetOtherPlayButtons() {
+			$('.song-play').each(function (_, _) {
+				const elem = $(this);
+
+				if (elem.hasClass('playing')) {
+					elem.removeClass('playing');
+					elem.children(':first').remove();
+
+					elem.append(PLAY_SVG);
+				}
+			});
+		}
+	</script>
+</html>
