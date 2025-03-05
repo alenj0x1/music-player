@@ -80,7 +80,7 @@ body {
 	position: relative;
 	overflow: hidden;
 	height: 300px;
-	max-height: 100px;
+	max-height: 150px;
 	transition: max-height 0.2s ease-in-out;
 }
 
@@ -204,4 +204,8 @@ button[class~='playing'] {
 
 button[class~='playing']:hover {
 	background-color: rgb(240, 240, 240);
+}
+
+.hidden {
+	display: none !important;
 }

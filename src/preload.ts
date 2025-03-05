@@ -6,6 +6,8 @@ contextBridge.exposeInMainWorld('data', {
 	getPicture: (path: string) => ipcRenderer.invoke('get-picture', path),
 	getSong: (data: { albumId: number; songId: number }) => ipcRenderer.invoke('get-song', data),
 	getSongBase64: (data: { albumId: number; songId: number }) => ipcRenderer.invoke('get-song-base64', data),
+	getSongPictureBase64: (data: { albumId: number; songId: number }) =>
+		ipcRenderer.invoke('get-song-picture-base64', data),
 	getMetadata: (data: { albumId: number; songId: number }) => ipcRenderer.invoke('get-metadata', data),
 });
 

@@ -56,7 +56,9 @@
 		$(document).on('click', '.album', async function () {
 			this.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'center' });
 
-			await electron.moveToView('songs', `id=${$(this).data('albumid')}`);
+			setTimeout(async () => {
+				await electron.moveToView('songs', `id=${$(this).data('albumid')}`);
+			}, 300);
 		});
 
 		function fillAlbums() {

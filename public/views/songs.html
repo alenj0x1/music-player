@@ -41,26 +41,40 @@
 
 			<main id="main">
 				<ul id="songs"></ul>
-
-				<audio id="audio-player" controls></audio>
 			</main>
+
+			<div id="player" class="hidden">
+				<div id="player-header">
+					<span id="player-header-name"></span>
+
+					<div id="player-header-duration">
+						<span id="player-header-duration-current"></span>
+						<span>:</span>
+						<span id="player-header-duration-total"></span>
+					</div>
+				</div>
+			</div>
 		</div>
 	</body>
 
 	<script src="../scripts/index.js"></script>
 
 	<script>
+		const audio = new Audio();
+		let currentSongId = null;
+		let buttonPlayIndex = null;
+
 		const PAUSE_SVG = `
-			<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="currentColor">
-  			<rect x="5" y="4" width="4" height="16"></rect>
-  			<rect x="15" y="4" width="4" height="16"></rect>
-			</svg>
-		`;
+					<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="currentColor">
+							<rect x="5" y="4" width="4" height="16"></rect>
+							<rect x="15" y="4" width="4" height="16"></rect>
+					</svg>
+				`;
 		const PLAY_SVG = `
-			<svg class="icon" width="50" height="50" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  			<path d="M8 5v14l11-7z"/>
-			</svg>
-		`;
+					<svg class="icon" width="50" height="50" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+							<path d="M8 5v14l11-7z"/>
+					</svg>
+				`;
 
 		$('.heart-button').on('click', function () {
 			const heartIcon = $('.heart-icon');
@@ -71,22 +85,84 @@
 			const button = $(this);
 			const songId = button.data('songid');
 			const albumId = button.data('albumid');
+			const allButtons = $('.song-play');
+			const buttonIndex = allButtons.index(this);
 
-			resetOtherPlayButtons();
-
-			button.toggleClass('playing');
-			button.children(':first').remove();
-
-			if (button.hasClass('playing')) {
-				$('#audio-player').attr('src', await data.getSongBase64({ albumId, songId }));
-				$('#audio-player')[0].play();
-
-				button.append(PAUSE_SVG);
+			if (songId === currentSongId && !allButtons[buttonIndex + 1]) {
+				button.removeClass('playing').empty().append(PLAY_SVG);
+				displayPlayer(true);
 				return;
 			}
 
-			button.append(PLAY_SVG);
+			if (songId === currentSongId && !audio.paused) {
+				audio.pause();
+				button.removeClass('playing').empty().append(PLAY_SVG);
+				return;
+			}
+
+			resetOtherPlayButtons(buttonIndex);
+
+			if (songId === currentSongId) {
+				button.addClass('playing').empty().append(PAUSE_SVG);
+				audio.play();
+				return;
+			}
+
+			if (songId !== currentSongId || audio.paused) {
+				button.addClass('playing').empty().append(PAUSE_SVG);
+
+				const getSong = await data.getSong({ albumId, songId });
+				const getMetadata = await data.getMetadata({ albumId, songId });
+
+				$('.header-image').attr('src', await data.getSongPictureBase64({ albumId, songId }));
+				$('#player-header-name').text(getSong.displayName);
+
+				audio.src = await data.getSongBase64({ albumId, songId });
+				audio.play();
+
+				currentSongId = songId;
+				buttonPlayIndex = buttonIndex;
+			}
 		});
+
+		audio.ontimeupdate = () => {
+			const current = parseInt(audio.currentTime);
+			const total = parseInt(audio.duration);
+
+			displayPlayer();
+
+			$('#player-header-duration-current').text(formatTime(current));
+			$('#player-header-duration-total').text(formatTime(total));
+		};
+
+		function displayPlayer(hidden) {
+			const player = $('#player');
+			hidden ? player.addClass('hidden') : player.removeClass('hidden');
+		}
+
+		audio.onended = () => {
+			const allButtons = $('.song-play');
+			const nextButton = allButtons[[buttonPlayIndex + 1]];
+			if (!nextButton) {
+				$(allButtons[buttonPlayIndex]).trigger('click');
+			}
+
+			$(nextButton).trigger('click');
+		};
+
+		function formatTime(time) {
+			let minutes = parseInt(time / 60);
+			let seconds = parseInt(time - minutes * 60);
+
+			if (isNaN(minutes)) minutes = 0;
+			if (isNaN(seconds)) seconds = 0;
+
+			return minutes !== 0 ? `${formatZero(minutes)}:${formatZero(seconds)}` : `0:${formatZero(seconds)}`;
+		}
+
+		function formatZero(value) {
+			return value <= 9 ? `0${value}` : value;
+		}
 
 		$(document).ready(async () => {
 			showToHomeButton();
@@ -99,8 +175,8 @@
 			const album = await data.getAlbum(parseInt(albumId));
 			if (!album) electron.moveToView('index', '');
 
-			$('.title').text(album.name);
-			$('title').text(album.name);
+			$('.title').text(album.displayName);
+			$('title').text(album.displayName);
 
 			const getPicture = await data.getPicture(album.picture);
 			$('.header-image').attr('src', getPicture);
@@ -109,37 +185,32 @@
 				const metadata = await data.getMetadata({ albumId: parseInt(albumId), songId: parseInt(song.id) });
 
 				$('#songs').append(`
-						<li class="song" data-songid=${song.id}>
-							<header class="song-header">
-								<span class="song-name">${song.name.split('.')[0]}</span>
-								
-								<div class="song-metadata">
-									<span class="song-metadata-artists">${metadata.common.artists.join(',')}</span>
-									<span class="song-metadata-year">${metadata.common.year}</span>
-								</div>
-							</header>
+					<li class="song" data-songid=${song.id}>
+						<header class="song-header">
+							<span class="song-name">${song.displayName}</span>
 
-							<div class="song-interact">
-								<button class="btn song-play" data-songid=${song.id} data-albumid=${albumId}>
-									<svg class="icon" width="50" height="50" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  									<path d="M8 5v14l11-7z"/>
-									</svg>
-								</button>
+							<div class="song-metadata">
+								<span class="song-metadata-artists">${metadata.common.artists.join(',')}</span>
+								<span class="song-metadata-year">${metadata.common.year}</span>
 							</div>
-						</li>
+						</header>
+
+						<div class="song-interact">
+							<button class="btn song-play" data-songid=${song.id} data-albumid=${albumId}>
+								<svg class="icon" width="50" height="50" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+										<path d="M8 5v14l11-7z"/>
+								</svg>
+							</button>
+						</div>
+					</li>
 				`);
 			});
 		});
 
-		function resetOtherPlayButtons() {
-			$('.song-play').each(function (_, _) {
-				const elem = $(this);
-
-				if (elem.hasClass('playing')) {
-					elem.removeClass('playing');
-					elem.children(':first').remove();
-
-					elem.append(PLAY_SVG);
+		function resetOtherPlayButtons(currentIndex) {
+			$('.song-play').each(function (number, _) {
+				if (number !== currentIndex) {
+					$(this).removeClass('playing').empty().append(PLAY_SVG);
 				}
 			});
 		}

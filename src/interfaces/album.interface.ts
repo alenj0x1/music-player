@@ -4,6 +4,7 @@ import { ISong } from './song.interface';
 export interface IAlbum {
 	id: number;
 	name: string;
+	displayName: string;
 	path: string;
 	completePath: string;
 	songs: ISong[];

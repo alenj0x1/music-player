@@ -16,3 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automatic search for songs and albums.
 - Selecting an image for an album, adding any image within the album (directory).
 - Validations to exclude hidden files, and disallowed formats.
+
+## [1.1.0] - 2025-03-04
+
+### Added
+
+- Support for user configuration, for now, music directory.
+- Player that displays the current and total music duration.
+- Automatic playback at the end of a song (Shuffle playback coming soon).
+- Improvements in the display of music and album names, as well as in the layout.
+- Caching the metadata of a song.

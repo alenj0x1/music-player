@@ -4,6 +4,7 @@ body {
 
 #header {
 	height: 100vh;
+	max-height: 100vh;
 }
 
 .title {
@@ -17,7 +18,7 @@ body {
 .header-image {
 	object-fit: cover;
 	position: initial;
-	mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0) 80%);
+	mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0) 90%);
 }
 
 .header-interact {
@@ -80,6 +81,40 @@ body {
 	animation: taka 0.5s;
 	transition-duration: 0.5s;
 	fill: rgb(236, 147, 147);
+}
+
+#player {
+	display: flex;
+	gap: 5px;
+	align-items: center;
+	position: fixed;
+	bottom: 0;
+	margin: 30px;
+	padding: 10px 20px;
+	border-radius: 45px;
+	background: rgba(255, 255, 255);
+	color: rgb(50, 50, 50);
+	font-size: 0.8rem;
+	max-width: 330px;
+	min-width: 330px;
+	overflow: hidden;
+}
+
+#player-header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+
+#player-header-name,
+#player-header-duration {
+	text-wrap: nowrap;
+}
+
+#player-header-name {
+	max-width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 @keyframes taka {

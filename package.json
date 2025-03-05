@@ -1,5 +1,5 @@
 {
-  "name": "desktop-app",
+  "name": "music-player",
   "version": "1.0.0",
   "author": {
     "name": "taka"
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
+    "js-yaml": "^4.1.0",
     "music-metadata": "^7.14.0",
     "typescript": "^5.8.2"
   },
@@ -27,6 +28,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.7.0",
     "@electron-forge/plugin-fuses": "^7.7.0",
     "@electron/fuses": "^1.8.0",
+    "@types/js-yaml": "^4.0.9",
     "electron": "^34.3.0",
     "electronmon": "^2.0.3"
   }
